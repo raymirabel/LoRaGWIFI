@@ -31,10 +31,11 @@
 
  @VERSIONS:
   20-07-2019 - v1.00 : Primera versión
+  19-08-2019 - v1.01 : Se añade comando para buscar redes wifi
   
 **************************************************************************/
 
-#define  FIRMWARE_VERSION "1.00"
+#define  FIRMWARE_VERSION "1.01"
 #define  HARDWARE_VERSION "190511"
 
 #include <ESP8266WiFi.h>

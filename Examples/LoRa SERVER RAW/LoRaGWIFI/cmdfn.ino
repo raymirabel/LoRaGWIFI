@@ -9,6 +9,7 @@ void commandLineInit(void){
   cmd.addCommand(command_key ,  F("key"),       F("[32 char]  Emoncms APIKEY"));
   cmd.addCommand(command_pow,   F("pow"),       F("[5...23]   RF power (5:min...23:max)"));
   cmd.addCommand(command_pan,   F("pan"),       F("[0...250]  PAN id"));
+  cmd.addCommand(command_list,  F("list"),      F("List wifi AP"));
   cmd.addCommand(command_clear, F("clear"),     F("Clear Wifi configuration"));
   cmd.addCommand(command_sta,   F("sta"),       F("Read Wifi status"));
   cmd.addCommand(command_param, F("all"),       F("Read all parameters"));
@@ -123,6 +124,34 @@ int command_pan(int argc, char** argv){
   return(ok);   
 }
 
+// Comando list...
+int command_list(int argc, char** argv){
+  // scan for nearby networks
+  int numSsid = WiFi.scanNetworks();
+  if (numSsid == -1) {
+    cmd.println("Couldn't get a wifi connection");
+    while (true);
+  }
+
+  // print the list of networks seen
+  cmd.print("Number of available networks:");
+  cmd.printf("%ld\r\n",numSsid);
+
+  // print the network number and name for each network found
+  for (int thisNet = 0; thisNet < numSsid; thisNet++) {
+    Serial.print(thisNet);
+    Serial.print(") ");
+    Serial.print(WiFi.SSID(thisNet));
+    Serial.print("\tSignal: ");
+    Serial.print(WiFi.RSSI(thisNet));
+    Serial.print(" dBm");
+    Serial.print("\tEncryption: ");
+    printEncryptionType(WiFi.encryptionType(thisNet));
+  }
+
+  return(true);
+}
+
 // Comando param...
 int command_param(int argc, char** argv){
   cmd.printf(F("ssid  = %s\r\n"),config.ssid);
@@ -169,6 +198,29 @@ int command_help(int argc, char** argv){
   return(false);
 }
 
+
+
+void printEncryptionType(int thisType) {
+  // read the encryption type and print out the name
+  switch (thisType) {
+    case ENC_TYPE_WEP:
+      Serial.print("WEP");
+      break;
+    case ENC_TYPE_TKIP:
+      Serial.print("WPA_PSK");
+      break;
+    case ENC_TYPE_CCMP:
+      Serial.print("WPA2_PSK");
+      break;
+    case ENC_TYPE_AUTO:
+      Serial.print("WPA_WPA2_PSK");
+      break;
+    case ENC_TYPE_NONE:
+      Serial.print("None");
+      break;
+  }
+  Serial.println();
+}
 
 
 
